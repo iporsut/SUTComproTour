@@ -1,0 +1,33 @@
+<% content_for :head do %>
+  <%= javascript_include_tag :defaults %>
+<% end %>
+
+<h1>Listing announcements</h1>
+
+<%= link_to 'New announcement', new_announcement_path %>
+
+<table>
+  <tr>
+    <th>Title</th>
+    <th>Body</th>
+    <th>Author</th>
+    <th>Published</th>
+  </tr>
+
+<% for announcement in @announcements %>
+  <tr>
+    <% @announcement = announcement %>
+    <td><%=h announcement.title %></td>
+    <td><%=h announcement.body %></td>
+    <td><%=h announcement.author %></td>
+    <td><%= in_place_editor_field :announcement, :published, {}, :rows => 1 %></td>
+    <td><%= link_to 'Show', announcement %></td>
+    <td><%= link_to 'Edit', edit_announcement_path(announcement) %></td>
+    <td><%= link_to 'Destroy', announcement, :confirm => 'Are you sure?', :method => :delete %></td>
+  </tr>
+<% end %>
+</table>
+
+<br />
+
+<%= link_to 'New announcement', new_announcement_path %>

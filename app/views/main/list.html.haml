@@ -1,0 +1,42 @@
+- content_for :head do
+  = javascript_include_tag :defaults
+  = javascript_include_tag 'announcement_refresh.js'
+  = javascript_include_tag 'codejom_timeout.js'
+
+= user_title_bar(@user)
+
+.announcementbox{:style => (@announcements.length==0 ? "display:none" : "")}
+  %span{:class => 'title'}
+    Announcements
+  #announcementbox-body
+    = render :partial => 'announcement', :collection => @announcements
+
+%hr/
+
+- if (Configuration.contest_mode?) and (@user.site!=nil) and (@user.site.started!=true)
+  %p=t 'main.start_soon'
+
+- if Configuration.show_tasks_to?(@user)
+  .problem-list{:id => 'problem-list'}
+    = render :partial => 'problem_title', :collection => @problems, :as => :problem
+  .problem-content
+    %span{:id => "problem-panel-filler", :style => (@current_problem_id!=nil) ? "display:none" : ""}
+      %h2
+        Welcome to SUT Compro Tournament
+      %br/
+      Choose problems from the list on the right.
+    = render :partial => 'problem', :collection => @problems
+
+%br{:clear=>'both'}/
+%hr/
+
+%script{:type => 'text/javascript'}
+  = "Announcement.refreshUrl = '#{url_for :controller => 'main', :action => 'announcements'}';"
+  Announcement.registerRefreshEventTimer();
+  = render :partial => 'submission_timeouts'
+  CodejomTimeout.updateProblemMessages();
+  CodejomTimeout.registerRefreshEvent();
+
+= periodically_call_remote(:url => { :action => 'problems' }, :update => 'problem-list', :frequency => '3')
+
+
